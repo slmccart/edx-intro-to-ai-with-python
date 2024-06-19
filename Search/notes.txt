@@ -1,0 +1,97 @@
+Agent - entity that perceives its environment and acts upon that environment
+State - a configuration of the agent and its environment
+Initial state - the state where the agent begins
+Actions - choices that can be made in a state
+    Actions(s) - returns the set of actions that can be executed in state 's'
+Transition model - a description of what state results from performing any applicable action in any state
+    Result(s, a) - returns the state resulting from performing action 'a' in state 's'
+State space - the set of all states reachable from the initial state by any sequence of actions
+Goal test - way to determine whether a given state is a goal state
+Path cost - numerical cost associated with a given path
+Solution - a sequence of actions that leads from the initial state to a goal state
+Optimal solution - a solution that has the lowest path cost among all solutions
+Node - a data structure that keeps track of:
+    - a state
+    - a parent (node that generated this node)
+    - an action (action applied from parent to get node)
+    - a path cost (from initial state to node)
+Stack - last-in first-out data type
+Queue - first-in, first-out data type
+Depth-first search - search algorithm that always expands the deepest node in the frontier (uses stack). 
+    Always returns a solution if state space is finite. May not be the least expensive path
+Breadth-first search - search algorithm that always expands the shallowest node in the frontier (uses queue)
+    Finds the optimal path, since it explores the shallowest states first. Could be more computationally expensive, since it may explore more states
+Uninformed Search - search strategy that uses no problem-specific knowledge
+Informed Search - search strategy that uses problem-specific knowledge to find solutions more efficiently
+Greedy best-first search - search algorithm that expands the node that is closest to the goal, as estimated by a heuristic function h(n)
+A* search - search algorithm that expands node with lowest value of g(n) + h(n), where:
+    g(n) = cost to reach node
+    h(n) = estimated cost to goal
+Minimax - search algorithm for adversarial search (two agents competing against each other)
+    Example, for Tic-tac-toe:
+        - Max(x) aims to maximize score (score of 1 = X wins)
+        - Min(o) aims to minimize score (score of -1 = O wins, with 0 = tie)
+
+    A* is optimal if:
+        h(n) is admissible (never overestimates the true cost), and
+        h(n) is consistent (for every node n and successor n' with step cost c, h(n) <= h(n') + c)
+
+Search Problems
+    - initial state
+    - actions
+    - transition model
+    - goal test
+    - path cost function
+
+Approach
+    - Start with a frontier that contains the initial state
+    - Repeat:
+        - If the frontier is empty, then no solution
+        - Remove a node from the frontier
+        - If node contains goal state, return the solution
+        - Expand node, add resulting nodes to the frontier
+
+Revised Approach (to handle loops in the graph)
+    - Start with a frontier that contains the initial state
+    - Start with an empty explored set
+        - Repeat:
+            - If the frontier is empty, then no solution
+            - Remove a node from the frontier
+            - If node contains goal state, return the solution
+            - Add the node to the explored set
+            - Expand node, add resulting nodes to the frontier if they aren't already in the frontier or the explored set
+
+Tic-Tac-Toe Game:
+    S0: Initial state
+    Player(s): returns which player's turn is it to move in state 's'
+    Actions(s):returns legal moves in state 's'
+    Result(s, a): returns state after action 'a' taken in state 's'
+    Terminal(s): checks if state 's' is a terminal state (win state or no more moves possible)
+    Utility(s): final numerical value for terminal state 's'
+
+Minimax algorithm:
+    Given a state 's':
+        - MAX picks action 'a' in Actions(s) that produces highest value of Min-Value(Result(s, a))
+        - MIN picks action 'a' in Actions(s) that produces smallest value of Max-Value(Result(s, a))
+
+    function Max-Value(state):
+        if Terminal(state):
+            return Utility(state)
+        v = -infinity
+        for action in Actions(state):
+            v = Max(v, Min-Value(Result(state, action)))
+        return v
+    
+    function Min-Value(state):
+        if Terminal(state):
+            return Utility(state)
+        v = infinity
+        for action in Actions(state):
+            v = Min(v, Max-Value(Result(state, action)))
+        return v
+
+Alpha-Beta pruning (https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning):
+    In minimax algorithm, stop evaluating a move when at least on possibility has been found that proves to be worse than a previously examined move
+
+Depth-Limited Minimax - stops looking after a fixed number of moves ahead. Needs an evaluation function to return the expected value of a non-terminal state
+
