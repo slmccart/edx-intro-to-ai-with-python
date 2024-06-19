@@ -123,6 +123,8 @@ class Maze:
 
         # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None)
+        # StackFrontier will use Depth-first search
+        # Changing to QueueFrontier will implement Breadth-first search
         frontier = StackFrontier()
         frontier.add(start)
 
