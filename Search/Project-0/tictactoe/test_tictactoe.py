@@ -336,6 +336,12 @@ def test_result_invalid():
             [[EMPTY, EMPTY, EMPTY], [EMPTY, X, EMPTY], [EMPTY, EMPTY, EMPTY]], (1, 1)
         )
 
+    with pytest.raises(IndexError):
+        tictactoe.result(tictactoe.initial_state(), (-1, -1))
+
+    with pytest.raises(IndexError):
+        tictactoe.result(tictactoe.initial_state(), (3, 3))
+
 
 # def main():
 #     test_player()

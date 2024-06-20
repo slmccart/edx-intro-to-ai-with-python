@@ -58,6 +58,10 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
     i, j = action
+
+    if not 0 <= i <= 2 or not 0 <= j <= 2:
+        raise IndexError(f"Invalid index provided: {action}")
+
     if not board[i][j] == EMPTY:
         raise IndexError(f"The board space provided is already filled: {action}")
     new_board = copy.deepcopy(board)
