@@ -20,7 +20,23 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    raise NotImplementedError
+    if board == initial_state():
+        return X
+
+    num_X = 0
+    num_O = 0
+
+    for row in board:
+        for column in row:
+            if column == X:
+                num_X += 1
+            elif column == O:
+                num_O += 1
+
+    if num_O < num_X:
+        return O
+    else:
+        return X
 
 
 def actions(board):
@@ -41,7 +57,35 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    raise NotImplementedError
+    # Check rows for 3 in a row
+    for row in board:
+        if row == [X, X, X]:
+            return X
+        elif row == [O, O, O]:
+            return O
+
+    # Check columns for 3 in a column (now transposed to rows to facilitate checking)
+    for row in [list(i) for i in zip(*board)]:
+        if row == [X, X, X]:
+            return X
+        elif row == [O, O, O]:
+            return O
+
+    # Check diagonals for 3 in a diagonal
+    diagonal = [board[0][0], board[1][1], board[2][2]]
+    if diagonal == [X, X, X]:
+        return X
+    elif diagonal == [O, O, O]:
+        return O
+
+    diagonal = [board[0][2], board[1][1], board[2][0]]
+    if diagonal == [X, X, X]:
+        return X
+    elif diagonal == [O, O, O]:
+        return O
+
+    # No winner, return None
+    return None
 
 
 def terminal(board):
@@ -58,26 +102,7 @@ def terminal(board):
     if not found_empty_space:
         return True
 
-    # Check rows for 3 in a row
-    for row in board:
-        if row == [X, X, X] or row == [O, O, O]:
-            return True
-
-    # Check columns for 3 in a column (now transposed to rows to facilitate checking)
-    for row in [list(i) for i in zip(*board)]:
-        if row == [X, X, X] or row == [O, O, O]:
-            return True
-
-    # Check diagonals for 3 in a diagonal
-    diagonal = [board[0][0], board[1][1], board[2][2]]
-    if diagonal == [X, X, X] or diagonal == [O, O, O]:
-        return True
-
-    diagonal = [board[0][2], board[1][1], board[2][0]]
-    if diagonal == [X, X, X] or diagonal == [O, O, O]:
-        return True
-
-    return False
+    return bool(winner(board))
 
 
 def utility(board):
