@@ -1,4 +1,5 @@
 import tictactoe
+import pytest
 
 X = "X"
 O = "O"
@@ -306,6 +307,34 @@ def test_actions():
     }
 
     assert tictactoe.actions(full_board_tie) == set()
+
+
+def test_result():
+    assert tictactoe.result(tictactoe.initial_state(), (1, 1)) == [
+        [EMPTY, EMPTY, EMPTY],
+        [EMPTY, X, EMPTY],
+        [EMPTY, EMPTY, EMPTY],
+    ]
+
+    assert tictactoe.result(
+        [
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, X, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+        ],
+        (0, 0),
+    ) == [
+        [O, EMPTY, EMPTY],
+        [EMPTY, X, EMPTY],
+        [EMPTY, EMPTY, EMPTY],
+    ]
+
+
+def test_result_invalid():
+    with pytest.raises(IndexError):
+        tictactoe.result(
+            [[EMPTY, EMPTY, EMPTY], [EMPTY, X, EMPTY], [EMPTY, EMPTY, EMPTY]], (1, 1)
+        )
 
 
 # def main():
