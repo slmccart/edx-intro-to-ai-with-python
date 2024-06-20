@@ -21,7 +21,27 @@ def test_initial_state():
 
 def test_utility():
     assert tictactoe.utility(tictactoe.initial_state()) == 0
-    # assert tictactoe.utility(full_board_tie) == 0
+    assert tictactoe.utility(full_board_tie) == 0
+    assert (
+        tictactoe.utility(
+            [
+                [X, X, X],
+                [EMPTY, EMPTY, EMPTY],
+                [O, O, O],
+            ]
+        )
+        == 1
+    )
+    assert (
+        tictactoe.utility(
+            [
+                [X, EMPTY, X],
+                [EMPTY, X, EMPTY],
+                [O, O, O],
+            ]
+        )
+        == -1
+    )
 
 
 def test_terminal():
@@ -78,7 +98,11 @@ def test_terminal_full_rows():
         ]
     )
     assert not tictactoe.terminal(
-        [[EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY], [X, O, X]]
+        [
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+            [X, O, X],
+        ]
     )
 
 
@@ -258,6 +282,30 @@ def test_winner_full_diagonals():
         )
         == None
     )
+
+
+def test_actions():
+    assert tictactoe.actions(
+        [
+            [X, O, X],
+            [X, O, X],
+            [O, X, EMPTY],
+        ]
+    ) == {(2, 2)}
+
+    assert tictactoe.actions(tictactoe.initial_state()) == {
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+    }
+
+    assert tictactoe.actions(full_board_tie) == set()
 
 
 # def main():

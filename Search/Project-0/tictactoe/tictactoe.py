@@ -43,7 +43,13 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    raise NotImplementedError
+    possible_actions = set()
+    for i, row in enumerate(board):
+        for j, column in enumerate(row):
+            if column == EMPTY:
+                possible_actions.add((i, j))
+
+    return possible_actions
 
 
 def result(board, action):
@@ -109,7 +115,12 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    if not terminal(board):
+    who = winner(board)
+    if who == X:
+        return 1
+    elif who == O:
+        return -1
+    else:
         return 0
 
 
