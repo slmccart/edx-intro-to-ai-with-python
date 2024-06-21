@@ -1,0 +1,148 @@
+Knowledge-based agents: agents that reason by operating on internal representations of knowledge
+Sentence: an assertion about the world in a knowledge representation language
+Logical connectives:
+    ~   = not
+    ^   = and
+    v   = or
+    ->  = implication
+    <-> = biconditional (if and only if)
+
+    P->Q: When P is false, implication is true. Implication is only false when P is true and Q is false
+    P<->Q: Only true when P and Q are both false or both true
+
+Model: assignment of a truth value to every propositional symbol (a "possible world")
+Knowledge base (KB): a set of sentences known by a knowledge-based agent
+Entailment: 
+    ⍺ |= β  (alpha entails beta)
+    In every model in which sentence ⍺ is true, sentence β is also true
+Inference: the process of deriving new sentences from old ones
+Model Checking:
+    To determine if KB |= ⍺:
+        - Enumerate all possible models
+        - If in every model where KB is true, ⍺ is true, then KB entails ⍺
+        - Otherwise, KB does not entail ⍺
+
+Inference Rules:
+    Modus ponens (if this then that, application of implication): 
+        ⍺ -> β
+          ⍺
+       ========
+          β
+
+    And Elimination (if both parts are true, then one part is true)
+        ⍺ ^ β
+       =======
+          ⍺
+
+    Double Negation Elimination
+        ~(~⍺)
+        ======
+          ⍺
+    
+    Implication Elimination
+        ⍺ -> β
+        ======
+        ~⍺ v β
+
+    Biconditional Elimination
+          ⍺ <-> β
+    ===================
+    (⍺ -> β) ^ (β -> ⍺)
+
+    De Morgan's Law
+        ~(⍺ ^ β)
+        =========
+         ~⍺ v ~β
+        
+    De Morgan's Law
+        ~(⍺ v β)
+        ========
+         ~⍺ ^ ~β
+
+    Distributive Property
+      (⍺ ^ (β v ɣ))
+    =================
+     (⍺ ^ β) v (⍺ ^ ɣ)
+
+    Distributive Property
+      (⍺ v (β ^ ɣ))
+    =================
+     (⍺ v β) ^ (⍺ v ɣ)
+
+Theorem Proving (as a search problem)
+    - initial state: starting knowledge base
+    - actions: inference rules
+    - transition model: new knowledge base after inference
+    - goal test: check statement we're trying to prove
+    - path cost function: number of steps in proof
+
+Resolution
+    P v Q1 v Q2 v ... v Qn
+            ~P
+    ======================
+      Q1 v Q2 v ... v Qn
+
+             P v Q1 v Q2 v ... v Qn
+            ~P v R1 v R2 v ... v Rm
+    ========================================
+     Q1 v Q2 v ... v Qn v R1 v R2 v ... v Rm
+
+Clause: a disjunction of literals (e.g. P v Q v R)
+Conjunctive Normal Form (CNF): logical sentence that is a conjunction of clauses (e.g. (A v B v C) ^ (D v ~E) ^ (F v G))
+
+Conversion to CNF
+    - Eliminate biconditionals
+        - turn (⍺ <-> β) into (⍺ -> β) ^ (β -> ⍺)
+    - Eliminate implications
+        - turn (⍺ -> β) into ~⍺ v β
+    - Move ~ inwards using De Morgan's Laws
+        - turn ~(⍺ ^ β) into ~⍺ v ~β
+    - Use distributive law to distribute v wherever possible
+
+    Example:
+    (P v Q) -> R            
+    ~(P v Q) v R            Eliminate Implication
+    (~P ^ ~Q) v R           De Morgan's Law
+    (~P v R) ^ (~Q v R)     Distributive Law
+
+Inference by Resolution
+    - To determine if KB |= ⍺:
+        - Check if (KB ^ ~⍺) is a contradiction?
+            - If so, then KB |= ⍺
+            - Otherwise, no entailment
+
+    - To determine if KB |= ⍺:
+        - Convert (KB ^ ~⍺) to Conjuctive Normal Form
+        - Keep checking to see if we can use resolution to produce a new clause
+            - If ever we produce the empty clause (equivalent to False), we have a contradiction, and KB |= ⍺
+            - Otherwise, if we can't add new clauses, to entailment
+
+First-Order Logic
+    Example from 'puzzle.py' logic puzzle
+    Constant Symbol     Predicate Symbol
+    ===============     ================
+    Minerva             Person
+    Pomona              House
+    Horace              BelongsTo
+    Gilderoy
+    Gryffindor
+    Hufflepuff
+    Ravenclaw
+    Slytherin
+
+    Person(Minerva)                     Minerva is a person
+    House(Gryffindor)                   Gryffindor is a house
+    ~House(Minerva)                     Minerva is not a house
+    BelongsTo(Minerva, Gryffindor)      Minerva belongs to Gryffindor
+
+    Universal Quantification
+        ∀x. BelongsTo(x, Gryffindor) -> ~BelongsTo(x, Hufflepuff)
+        "For all value of x, if x belongs to Gryffindor, then x does not belong to Hufflepuff"
+
+    Existential Quantification
+        ∃x. House(x) ^ BelongsTo(Minerva, x)
+        "There exists an object x such that x is a house and Minerva belongs to x"
+
+        ∀x. Person(x) -> (∃x. House(y) ^ BelongsTo(x, y))
+        "For all objects x, if x is a person, then there exists an object y such that y is a house and x belongs to y"
+        "Every person belongs to a house"
