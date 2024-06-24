@@ -1,5 +1,6 @@
 import itertools
 import random
+import copy
 
 
 class Minesweeper:
@@ -191,6 +192,16 @@ class MinesweeperAI:
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+
+        # Mark the cell as a move that has been made
+
+        # Mark the cell as safe
+
+        # Add a new sentence to the AI's knowledge base based on the value of `cell` and `count`
+
+        # Mark any additional cells as safe or as mines if it can be concluded based on the AI's knowledge base
+
+        # Add any new sentences to the AI's knowledge base if they can be inferred from existing knowledge
         raise NotImplementedError
 
     def make_safe_move(self):
@@ -202,7 +213,15 @@ class MinesweeperAI:
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+        safe_copy = copy.deepcopy(self.safes)
+
+        while not len(safe_copy) == 0:
+            possible_move = safe_copy.pop()
+            if not possible_move in self.moves_made:
+                return possible_move
+
+        # No safe moves that have not already been made
+        return None
 
     def make_random_move(self):
         """
@@ -211,4 +230,14 @@ class MinesweeperAI:
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        potential_moves = set()
+
+        # Populate potential_moves with a full board, except for moves already made and moves known to be mines
+        for i in range(self.width):
+            for j in range(self.height):
+                move = (i, j)
+                if not move in self.mines and not move in self.moves_made:
+                    potential_moves.add(move)
+
+        # Randomly pick from potential moves
+        return random.choice(tuple(potential_moves))

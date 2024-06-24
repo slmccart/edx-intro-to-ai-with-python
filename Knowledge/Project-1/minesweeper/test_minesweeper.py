@@ -1,4 +1,5 @@
 from minesweeper import Sentence
+from minesweeper import MinesweeperAI
 
 
 def test_sentence_mark_mine():
@@ -35,3 +36,22 @@ def test_sentence_known_safes():
 
     sentence1 = Sentence({(0, 0), (0, 1), (1, 0), (1, 1)}, 2)
     assert sentence1.known_safes() == set()
+
+
+def test_minesweeperai_make_safe_move():
+    ai = MinesweeperAI(height=2, width=2)
+    ai.safes = {(0, 0), (0, 1), (1, 0)}
+    ai.moves_made = {(0, 0)}
+    assert ai.make_safe_move() == (0, 1)
+
+    ai1 = MinesweeperAI(height=2, width=2)
+    ai1.safes = {(0, 0), (0, 1), (1, 0)}
+    ai1.moves_made = {(0, 0), (0, 1), (1, 0)}
+    assert ai1.make_safe_move() == None
+
+
+def test_minesweeperai_make_random_move():
+    ai = MinesweeperAI(height=2, width=2)
+    ai.mines = {(0, 1)}
+    ai.moves_made = {(0, 0)}
+    assert ai.make_random_move() in {(1, 0), (1, 1)}
