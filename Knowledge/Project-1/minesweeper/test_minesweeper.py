@@ -55,3 +55,33 @@ def test_minesweeperai_make_random_move():
     ai.mines = {(0, 1)}
     ai.moves_made = {(0, 0)}
     assert ai.make_random_move() in {(1, 0), (1, 1)}
+
+
+def test_minesweeperai_get_cell_neighbors():
+    ai = MinesweeperAI(height=3, width=3)
+    assert ai.get_cell_neighbors((1, 1)) == {
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (1, 0),
+        (1, 2),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+    }
+
+    ai = MinesweeperAI(height=3, width=3)
+    assert ai.get_cell_neighbors((0, 0)) == {(0, 1), (1, 0), (1, 1)}
+
+    ai = MinesweeperAI(height=3, width=3)
+    assert ai.get_cell_neighbors((2, 2)) == {(1, 1), (1, 2), (2, 1)}
+
+    ai = MinesweeperAI(height=3, width=3)
+    assert ai.get_cell_neighbors((1, 0)) == {(0, 0), (0, 1), (1, 1), (2, 0), (2, 1)}
+
+    ai = MinesweeperAI(height=4, width=5)
+    assert ai.get_cell_neighbors((3, 4)) == {(2, 3), (2, 4), (3, 3)}
+
+
+if __name__ == "__main__":
+    test_minesweeperai_get_cell_neighbors()
