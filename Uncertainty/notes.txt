@@ -1,0 +1,134 @@
+Probability:
+    P(ω): Probability of a possible world ω.  0<= P(ω) <= 1
+    Sum(ω in Ω) P(ω) = 1 (sum of all individual probabilities is 1)
+
+Unconditional probability: degree of belief in a proposition in the absence of any other evidence
+Conditional probability: degree of belief in a proposition given some evidence that has already been revealed
+    P(a|b): probability of a, given b
+    P(rain today | rain yeterday)
+
+    P(a|b) = P(a^b) / P(b)
+
+    P(rolling 12) = 1/36
+    P(sum 12 | 1 die is 6) = 1/36 / 1/6 = 1/6
+
+Random variable: a variable in probability theory with a domain of possible values it can take on
+    Roll: {1, 2, 3, 4, 5, 6}
+    Weather: {sun, cloud, rain, wind, snow}
+    Traffic: {none, light, heavy}
+    Flight: {on time, delayed, cancelled}
+
+Probability distribution:
+    P(Flight = on time) = 0.6
+    P(Flight = delayed) = 0.3
+    P(Flight = cancelled) = 0.1
+    P(Flight) = <0.6, 0.3, 0.1> (vector containing probabilities of each value in the domain of possible values)
+
+Independence: the knowledge that one event occurs does not affect the probability of the other event
+    P(a^b) = P(a)P(b)
+
+Bayes' Rule:
+    P(a^b) = P(a)P(a|b)
+    P(a^b) = P(b)P(b|a)
+
+    P(a)P(b|a) = P(b)P(a|b)
+
+    P(b|a) = P(a|b)P(b) / P(a)
+
+    Given clouds in the morning, what is the probability of rain in the afternoon?
+        - 80% of rainy afternoons start with cloudy mornings
+        - 40% of days have cloudy mornings
+        - 10% of days have rainy afternoons
+
+        P(rain in afternoon | clouds in morning) = P(clouds in morning | rain in afternoon)P(rain in afternoon) / P(clouds in morning)
+                                                 = 0.8 * 0.1 / 0.4
+                                                 = 0.2
+                                                 = 20%
+
+    Hence, knowing:
+        P(visible effect | unknown cause)
+    we can calculate:
+        P(unknown cause | visible effect)
+
+Joint Probability:
+    C = cloud = 0.4
+    C = !cloud = 0.6
+
+    R = rain = 0.1
+    R = !rain = 0.9
+
+                  R = rain  | R = !rain
+    ===================================
+    C = cloud  |    0.08    |   0.32  |
+    ===================================
+    C = !cloud |    0.02    |   0.58  |
+    ===================================
+
+    P(C | rain) = P(C, rain) / P(rain)
+                = ⍺P(C, rain)          *P(rain) can be treated as a constant and replaced by ⍺ = 1/n
+                = ⍺<0.08, 0.02> 
+                = <0.8, 0.2>           * Multiply by normalization constant
+
+Probability rules:
+    P(a ^ b) = P(a, b)    * Two ways of writing Probability of a and b
+    - Negation: 
+        P(!a) = 1 - P(a)
+    - Inclusion-Exclusion:
+        P(a v b) = P(a) + P(b) - P(a ^ b)   * Subtract P(a ^ b) to avoid double counting
+    - Marginalization:
+        P(a) = P(a, b) + P(a, !b)   * for binary options of b
+        
+        P(X = xi) = SUMj P(X = xi, Y = yj)   * For random variables, sum over all possibilities of y
+
+        P(C = cloud) = P(C = cloud, R = rain) + P(C = cloud, R = !rain)
+                     = 0.08 + 0.32
+                     = 0.40
+    - Conditioning:
+        P(a) = P(a|b)P(b) + P(a|!b)P(!b)    * Same as marginalization, but with conditional probabilities
+        P(X = xi) = SUMj P(X = xi | Y = yj)P(Y = yj)
+
+Bayesian Network: 
+    - data structure that represents the dependencies among random variables
+    - directed graph
+        - each node represents a random variable
+        - arrow from X to Y means X is a parent of Y
+        - each node X has probability distribution P(X | Parents(X))
+
+                Rain
+        {none, light, heavy}       <0.7, 0.2, 0.1>
+          |              |
+          v              |
+     Maintenance         |           R      yes     no
+      {yes, no}          |          none    0.4     0.6
+          |              |          light   0.2     0.8
+          |              |          heavy   0.1     0.9
+          v              v
+              Train                 R       M      on time   delayed
+        {on time, delayed}         none     yes     0.8       0.2
+                |                  none     no      0.9       0.1
+                |                  light    yes     0.6       0.4
+                |                  light    no      0.7       0.3
+                |                  heavy    yes     0.4       0.6
+                |                  heavy    no      0.5       0.5
+                v   
+            Appointment
+           {attend, miss}           T       attend      miss
+                                on time      0.9        0.1
+                                delayed      0.6        0.4
+
+Inference:
+    - Query X: variable for which to compute distribution
+    - Evidence variables E: observed variables for event e
+    - Hidden variables Y: non-evidence, non-query variable
+
+    Goal: Calculate P(X|e)
+
+    P(Appointment | light rain, no track maintenance) = ⍺P(Appointment, light, no)
+                                                      = ⍺[ P(Appointment, light, no, on time) +
+                                                           P(Appointment, light, no, delayed)]
+                                                        
+    P(X|e) = ⍺P(X,e) = ⍺SUMy P(X,e,y)
+        - X is the query variable
+        - e is the evidence
+        - y ranges over values of hidden variables
+        - ⍺ normalizes the result
