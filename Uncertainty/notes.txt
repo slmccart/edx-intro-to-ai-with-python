@@ -116,7 +116,7 @@ Bayesian Network:
                                 on time      0.9        0.1
                                 delayed      0.6        0.4
 
-Inference:
+Inference by enumeration:
     - Query X: variable for which to compute distribution
     - Evidence variables E: observed variables for event e
     - Hidden variables Y: non-evidence, non-query variable
@@ -132,3 +132,60 @@ Inference:
         - e is the evidence
         - y ranges over values of hidden variables
         - ⍺ normalizes the result
+
+Approximate Inference:
+    - Sampling: For each random variable in the Bayesian network, choice a result with probabilities from the distribution, 
+                and calculate the query. Then run the same simulation multiple times
+        - For conditional probabilities, use the same approach, but reject the samples that don't match the criteria you are looking for
+
+Likelihood Weighting:
+    - Start by fixing the values for evidence variables
+    - Sample the non-evidence variables using conditional probabilities in the Bayesian Network
+    - Weight each sample by its likelihood: the probability of all of the evidence
+
+Uncertainty over time:
+    - Xt: Weather at time t
+    - Markov assumption: the assumption that the current state depends on only a finite, fixed number of previous states
+        - Example: weather today only depends on weather for the last couple of days
+
+                        Tomorrow (Xt+1)
+                          Sunny Rainy
+    Today (Xt)    Sunny    0.8   0.2
+                  Rainy    0.3   0.7
+
+    Markov Chain
+    Sun--->Sun--->Rain--->Rain--->Rain--->
+    X0      X1     X2      X3      X4
+
+Sensor models:
+    Hidden state        Observation
+    ================    ===================
+    robot's position    robot's sensor date
+    words spoken        audio waveforms
+    user engagement     website or app analytics
+    weather             employees carrying umbrella
+
+    Hidden Markov Model: a Markov model for a system with hidden states that generate some observed event
+
+    Sensor model (or emission probabilities)
+                        Observation (Et)
+                          Umbrella   No Umbrella
+    State (Xt)    Sunny    0.2          0.8
+                  Rainy    0.9          0.1
+    
+    Sensor Markov assumption: the assumption that the evidence variable depends only on the corresponding state
+
+     X0     X1     X2     X3     X4
+    Sun--->Sun--->Rain-->Rain-->Rain   Hidden state (Sun or Rain)
+     |      |      |      |      |
+     |      |      |      |      |
+     v      v      v      v      v
+     No--->Yes--->Yes--->Yes--->Yes    Observed state (Umbrella or no umbrella)
+     E0    E1     E2     E3     E4
+
+     Task                       Definition
+     =========                  ==========
+     filtering                  given observations from start until now, calculate distribution for current state
+     prediction                 given observations from start until now, calculate distribution for a future state
+     smoothing                  given observations from start until now, calculate distribution for past state
+     most likely explanation    given observations from start until now, calculate most likely sequence of states
