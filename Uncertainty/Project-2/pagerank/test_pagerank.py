@@ -1,4 +1,5 @@
 from pagerank import transition_model
+from pagerank import sample_pagerank
 from pytest import approx
 
 
@@ -40,5 +41,25 @@ def test_transition_model_no_outgoing_links():
     assert model["3.html"] == 1 / 3
 
 
+def test_sample_pagerank():
+    ranks = sample_pagerank(
+        corpus={
+            "1.html": {"2.html", "3.html"},
+            "2.html": {"3.html"},
+            "3.html": {"2.html"},
+        },
+        damping_factor=0.85,
+        n=1000,
+    )
+
+    assert len(ranks) == 3
+
+    sum = 0
+    for page in ranks:
+        print(f"Page: {page}, Rank: {ranks[page]}")
+        sum += ranks[page]
+    assert sum == approx(1)
+
+
 if __name__ == "__main__":
-    test_transition_model()
+    test_sample_pagerank()
