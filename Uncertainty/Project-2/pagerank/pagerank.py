@@ -122,6 +122,11 @@ def iterate_pagerank(corpus, damping_factor):
     THRESHOLD = 0.001
     N = len(corpus)
 
+    # Update corpus for pages with no links, so no special handling is required later
+    for page in corpus:
+        if not corpus[page]:
+            corpus[page] = set(corpus.keys())
+
     # Seed dictionary with all pages and an initial value of 1 / N
     ranks = {}
     for page in corpus:
@@ -136,11 +141,7 @@ def iterate_pagerank(corpus, damping_factor):
 
             summation = 0
             for link in get_links_to_page(corpus, page):
-                # If page has no links, interpret as one link for every page, including itself
-                if len(corpus[link]) == 0:
-                    summation += ranks[link] / N
-                else:
-                    summation += ranks[link] / len(corpus[link])
+                summation += ranks[link] / len(corpus[link])
 
             ranks[page] = pr + (damping_factor * summation)
 
