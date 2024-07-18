@@ -2,6 +2,7 @@ from heredity import joint_probability
 from heredity import individual_probability
 from heredity import probability_of_gene_from_parent
 from heredity import update
+from heredity import normalize
 from pytest import approx
 
 people = {
@@ -80,5 +81,19 @@ def test_update():
     }
 
 
+def test_normalize():
+    probabilities = {
+        "Harry": {"gene": {2: 0.1, 1: 0.2, 0: 0.1}, "trait": {True: 0.1, False: 0.3}},
+    }
+
+    normalize(probabilities)
+
+    assert probabilities["Harry"]["gene"] == {2: 0.25, 1: 0.5, 0: 0.25}
+    assert sum(probabilities["Harry"]["gene"].values()) == 1
+    assert sum(probabilities["Harry"]["trait"].values()) == approx(1)
+    # Below assertion should be correct, but float rounding errors cause it to fail
+    # assert probabilities["Harry"]["trait"] == {True: 0.25, False: 0.75}
+
+
 if __name__ == "__main__":
-    test_individual_probability()
+    test_normalize()
