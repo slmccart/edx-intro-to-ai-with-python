@@ -116,9 +116,8 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    j_prob = 1
-
     num_genes = {}
+    # Populate count of how many genes each person has
     for person in people:
         if person in one_gene:
             num_genes[person] = 1
@@ -127,6 +126,9 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         else:
             num_genes[person] = 0
 
+    j_prob = 1
+
+    for person in people:
         j_prob *= individual_probability(
             people, person, num_genes, person in have_trait
         )
@@ -141,20 +143,30 @@ def individual_probability(people, person, num_genes, has_trait):
             * PROBS["trait"][num_genes[person]][has_trait]
         )
     else:
-        prob_gene_from_mother = calculate_parent_gene_contribution(
+        prob_gene_from_mother = probability_of_gene_from_parent(
             num_genes[people[person]["mother"]]
         )
-        prob_gene_from_father = calculate_parent_gene_contribution(
+        prob_gene_from_father = probability_of_gene_from_parent(
             num_genes[people[person]["father"]]
         )
-        prob_gene_from_parents = (
-            prob_gene_from_father * (1 - prob_gene_from_mother)
-        ) + (prob_gene_from_mother * (1 - prob_gene_from_father))
+
+        match num_genes[person]:
+            case 0:
+                prob_gene_from_parents = (1 - prob_gene_from_father) * (
+                    1 - prob_gene_from_mother
+                )
+            case 1:
+                prob_gene_from_parents = (
+                    prob_gene_from_father * (1 - prob_gene_from_mother)
+                ) + (prob_gene_from_mother * (1 - prob_gene_from_father))
+            case 2:
+                prob_gene_from_parents = prob_gene_from_father * prob_gene_from_mother
+
         return prob_gene_from_parents * PROBS["trait"][num_genes[person]][has_trait]
 
 
-def calculate_parent_gene_contribution(num_genes):
-    match num_genes:
+def probability_of_gene_from_parent(num_parent_genes):
+    match num_parent_genes:
         case 0:
             return (0.5 * PROBS["mutation"]) + (0.5 * PROBS["mutation"])
         case 1:
