@@ -1,6 +1,7 @@
 from heredity import joint_probability
 from heredity import individual_probability
 from heredity import probability_of_gene_from_parent
+from heredity import update
 from pytest import approx
 
 people = {
@@ -50,6 +51,33 @@ def test_probability_of_gene_from_parent():
     assert probability_of_gene_from_parent(0) == 0.01
     assert probability_of_gene_from_parent(1) == 0.5
     assert probability_of_gene_from_parent(2) == 0.99
+
+
+def test_update():
+    probabilities = {
+        "Harry": {"gene": {2: 0, 1: 0, 0: 0}, "trait": {True: 0, False: 0}},
+        "Lily": {"gene": {2: 0, 1: 0, 0: 0}, "trait": {True: 0, False: 0}},
+        "James": {"gene": {2: 0, 1: 0, 0: 0}, "trait": {True: 0, False: 0}},
+    }
+
+    p = 0.25
+
+    update(probabilities, {"Harry"}, {"James"}, {"James"}, p)
+
+    assert probabilities["Harry"] == {
+        "gene": {2: 0, 1: 0.25, 0: 0},
+        "trait": {True: 0, False: 0.25},
+    }
+
+    assert probabilities["James"] == {
+        "gene": {2: 0.25, 1: 0, 0: 0},
+        "trait": {True: 0.25, False: 0},
+    }
+
+    assert probabilities["Lily"] == {
+        "gene": {2: 0, 1: 0, 0: 0.25},
+        "trait": {True: 0, False: 0.25},
+    }
 
 
 if __name__ == "__main__":
