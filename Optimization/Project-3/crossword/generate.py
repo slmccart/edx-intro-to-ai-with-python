@@ -3,7 +3,7 @@ import sys
 from crossword import *
 
 
-class CrosswordCreator():
+class CrosswordCreator:
 
     def __init__(self, crossword):
         """
@@ -11,8 +11,7 @@ class CrosswordCreator():
         """
         self.crossword = crossword
         self.domains = {
-            var: self.crossword.words.copy()
-            for var in self.crossword.variables
+            var: self.crossword.words.copy() for var in self.crossword.variables
         }
 
     def letter_grid(self, assignment):
@@ -49,6 +48,7 @@ class CrosswordCreator():
         Save crossword assignment to an image file.
         """
         from PIL import Image, ImageDraw, ImageFont
+
         cell_size = 100
         cell_border = 2
         interior_size = cell_size - 2 * cell_border
@@ -57,9 +57,8 @@ class CrosswordCreator():
         # Create a blank canvas
         img = Image.new(
             "RGBA",
-            (self.crossword.width * cell_size,
-             self.crossword.height * cell_size),
-            "black"
+            (self.crossword.width * cell_size, self.crossword.height * cell_size),
+            "black",
         )
         font = ImageFont.truetype("assets/fonts/OpenSans-Regular.ttf", 80)
         draw = ImageDraw.Draw(img)
@@ -68,19 +67,24 @@ class CrosswordCreator():
             for j in range(self.crossword.width):
 
                 rect = [
-                    (j * cell_size + cell_border,
-                     i * cell_size + cell_border),
-                    ((j + 1) * cell_size - cell_border,
-                     (i + 1) * cell_size - cell_border)
+                    (j * cell_size + cell_border, i * cell_size + cell_border),
+                    (
+                        (j + 1) * cell_size - cell_border,
+                        (i + 1) * cell_size - cell_border,
+                    ),
                 ]
                 if self.crossword.structure[i][j]:
                     draw.rectangle(rect, fill="white")
                     if letters[i][j]:
                         _, _, w, h = draw.textbbox((0, 0), letters[i][j], font=font)
                         draw.text(
-                            (rect[0][0] + ((interior_size - w) / 2),
-                             rect[0][1] + ((interior_size - h) / 2) - 10),
-                            letters[i][j], fill="black", font=font
+                            (
+                                rect[0][0] + ((interior_size - w) / 2),
+                                rect[0][1] + ((interior_size - h) / 2) - 10,
+                            ),
+                            letters[i][j],
+                            fill="black",
+                            font=font,
                         )
 
         img.save(filename)
