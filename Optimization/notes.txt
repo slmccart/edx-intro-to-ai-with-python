@@ -1,0 +1,143 @@
+Optimization - choosing the best option from a set of options
+Local search - search algorithms that maintain a single node and searches by moving to a neighboring node
+    State-space landscape - in bar graph, each bar represents a state and the height of the bar represents the value of an objective function
+    Hill climbing algorithm - Start at state and consider neighbors, choose the neighbor that maximizes (or minimizes) the objective function
+        function Hill-Climb(problem):
+            current = initial state of problem
+            repeat:
+                neighbor = highest (or lowest) valued neighbor of current
+                if neighbor not better than current:
+                    return current
+                else:
+                    current = neighbor
+        
+        Hill Climbing Variants
+
+        Variant              Definition
+        steepest-ascent      choose the highest-valued neighbor
+        stochastic           choose randomly from the higher-valued neighbors
+        first-choice         choose the first higher-valued neighbor
+        random-restart       conduct hill climbing multiple times
+        local beam search    chooses the k highest-valued neighbors
+
+    Simulated Annealing
+        - Early on, higher "temperature": more likely to accept neighbors that are worse than current state
+        - Later on, lower "temperature": less likely to accept neighbors that are worse than current state
+
+        function Simulated-Annealing(problem, max):
+            current = initial state of problem
+            for t = 1 to max:
+                T = Temperature(t)
+                neighbor = random neighbor of current
+                ΔE = how much better neighbor is than current
+                if ΔE > 0:
+                    current = neighbor
+                with probability e^(ΔE/T) set current = neighbor
+
+            return current
+
+Linear Programming
+    - Minimize a cost function c1x1 + c2x2 + ... + cnxn
+    - With constraints of form a1x1 + a2x2 + ... + anxn <= b
+                    or of form a1x1 + a2x2 + ... + anxn = b
+    - With bounds for each variable li <= xi <= ui (lower and upper bounds)
+
+    Example:
+        - Two machines X1 and X2. X1 costs $50/hour to run, X2 costs $80/hour to run. Goal is to minimize cost
+        - X1 requires 5 units of labor per hour. X2 requires 2 units of labor per hour. Total of 20 units of labor to spend
+        - X1 produces 10 units of output per hour. Company needs 90 units of output
+
+        Cost function: 50x_1 + 80x_2
+        Constraint: 5x_1 + 2x_2 <= 20
+        Constraint: 10x_1 + 12x_2 >= 90
+                    (-10x_1) + (-12x_2) <= -90   (multiply both sides by -1 to switch >= to <=)
+
+Constraint satisfaction problem
+    - Set of variables {X1, X2, ..., Xn}
+    - Set of domains for each variable {D1, D2, ..., Dn}
+    - Set of constraints C
+
+    Example: Sudoku
+        - Variables - Empty squares - {(0,2), (1,1), (1,2), (2,0), ...}
+        - Domains - {1, 2, 3, 4, 5, 6, 7, 8, 9} for each variable
+        - Constraints - {(0,2) != (1,1) != (1,2) != (2,0), ...}
+
+    Example: Course Scheduling
+        - Variables - Exams - {A, B, C, D, E, F, G}
+        - Domains - Days - {Monday, Tuesday, Wednesday} for each variable
+        - Constraints {A != B, A != C, B != C, B != D, B != E, C != E, C != F, D != E, E != F, E != G, F != G}
+
+    Hard constraints: constraints that must be satisfied in a correct solution
+    Soft constraints: constraints that express some notion of which solutions are preferred over others
+    Unary constraint: constraint involving only one variable - {A != Monday} (course A cannot have exam on Monday)
+    Binary constraint: constraint involving two variables - {A != B}
+    Node consistency: When all the values in a variable's domain satisfy the variable's unary constraints
+    Arc consistency: When all the values in a variable's domain satisfy the variable's binary constraints
+        formally: To make X arc-consistent with respect to Y, remove elements from X's domain until every choice for X has a possible choice for Y
+
+        function Revise(csp, X, Y):     # csp = constraint satisfaction problem
+            revised = false
+            for x in X.domain:
+                if no y Y.domain satisfies constraint for (X, Y): 
+                    delete x from X.domain
+                    revised = true
+            return revised
+
+        function AC-3(csp):             # arc consistency for entire network
+            queue = all arcs in csp
+            while queue non-empty:
+                (X, Y) = Dequeue(queue)
+                if Revise(csp, X, Y):
+                    if size of X.domain == 0:
+                        return false
+                    for each Z in X.neighbors - {Y}:
+                        Enqueue(queue, (Z, X))
+            return true
+
+    CSPs as Search Problems
+        - initial state: empty assignment (no variables)
+        - actions: add a {variable = value} to assignment
+        - transition model: shows how adding an assignment changes the assignment
+        - goal test: check if all variables assigned and constraints all satisfied
+        - path cost function: all paths have same cost
+
+    Backtracking Search:
+        function Backtrack(assignment, csp):
+            if assignment complete: 
+                return assignment
+            var = Select-Unassigned-Var(assignment, csp)
+            for value in Domain-Values(var, assignment, csp):
+                if value consistent with assignment:
+                    add {var = value} to assignment
+                    result = Backtrack(assignment, csp)
+                    if result != failure: 
+                        return result
+                remove {var = value} from assignment
+            return failure
+
+    Maintaining arc-consistency:
+        - Algorithm for enforcing arc-consistency every time we make a new assignment
+        - When we make a new assignment to X, calls AC-3, starting with a queue of all arcs (Y, X) where Y is a neighbor of X
+
+        function Backtrack(assignment, csp):
+            if assignment complete: 
+                return assignment
+            var = Select-Unassigned-Var(assignment, csp)
+            for value in Domain-Values(var, assignment, csp):
+                if value consistent with assignment:
+                    add {var = value} to assignment
+                    inferences = Inference(assignment, csp)                     # NEW  Inference could call AC-3 function to maintain arc consistency
+                    if inferences != failure: add inferences to assignment      # NEW
+                    result = Backtrack(assignment, csp)
+                    if result != failure: 
+                        return result
+                remove {var = value} and inferences from assignment
+            return failure
+
+    Heuristics:
+        - Select-Unassigned-Var
+            - minimum remaining values (MRV) heuristic: select the variable that has the smallest domain
+            - degree heuristic: select the variable that has the highest degree (number of nodes with highest number of connections)
+        - Domain-Values
+            - least-constraining values heuristic: return variables in order by number of choices that are ruled out for neighboring variables
+                - try least-constraining values first
