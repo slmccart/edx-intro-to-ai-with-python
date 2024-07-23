@@ -124,6 +124,38 @@ def test_assignment_complete():
     assert cc.assignment_complete(d)
 
 
+def test_consistent_fails_unary_constraint():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+
+    assignment = {var2: "NINE", var1: "FOUR"}
+
+    assert not cc.consistent(assignment)
+
+
+def test_consistent_fails_distinct_check():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+
+    assignment = {var2: "FOUR", var4: "FOUR"}
+
+    assert not cc.consistent(assignment)
+
+
+def test_consistent_fails_binary_constraints():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+
+    assignment = {var1: "THREE", var3: "ONE"}
+
+    assert not cc.consistent(assignment)
+
+
+def test_consistent():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+
+    assignment = {var1: "SEVEN", var2: "NINE", var3: "SIX", var4: "FIVE"}
+
+    assert cc.consistent(assignment)
+
+
 if __name__ == "__main__":
     # test_enforce_node_consistency()
-    test_assignment_complete()
+    test_consistent_fails_unary_constraint()
