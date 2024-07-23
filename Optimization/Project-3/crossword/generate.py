@@ -1,6 +1,7 @@
 import sys
 
 from crossword import *
+from collections import deque
 
 
 class CrosswordCreator:
@@ -156,7 +157,35 @@ class CrosswordCreator:
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        # If arcs was not passed in, initialize queue with all of the overlapping variables
+        #   in the crossword
+        if arcs == None:
+            arcs = deque(
+                [k for k, v in self.crossword.overlaps.items() if v is not None]
+            )
+        # Else, convert the incoming list to a queue
+        else:
+            arcs = deque(arcs)
+
+        # While arcs is not empty
+        while arcs:
+            # Pop first pair of variables from queue
+            x, y = arcs.popleft()
+            print(x, y)
+
+            # Make the arc arc-consistent
+            if self.revise(x, y):
+                # If the domain of x is empty, return False since this can't be a solution
+                if len(self.domains[x]) == 0:
+                    return False
+
+                # Since the domain of x changed, we need to add arcs for all of x's neighbors to the queue
+                print(self.crossword.neighbors(x))
+                print(self.crossword.neighbors(x) - {y})
+                for z in self.crossword.neighbors(x) - {y}:
+                    arcs.append((z, x))
+
+        return True
 
     def assignment_complete(self, assignment):
         """
