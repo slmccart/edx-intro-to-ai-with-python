@@ -60,14 +60,15 @@ def test_revise_no_overlap():
     assert not cc.revise(x, y)
 
 
+var1 = Variable(0, 1, Variable.DOWN, 5)
+var2 = Variable(4, 1, Variable.ACROSS, 4)
+var3 = Variable(0, 1, Variable.ACROSS, 3)
+var4 = Variable(1, 4, Variable.DOWN, 4)
+
+
 def test_ac3_no_list():
     cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
     cc.enforce_node_consistency()
-
-    var1 = Variable(0, 1, Variable.DOWN, 5)
-    var2 = Variable(4, 1, Variable.ACROSS, 4)
-    var3 = Variable(0, 1, Variable.ACROSS, 3)
-    var4 = Variable(1, 4, Variable.DOWN, 4)
 
     assert cc.domains[var1] == {"EIGHT", "THREE", "SEVEN"}
     assert cc.domains[var2] == {"NINE", "FIVE", "FOUR"}
@@ -93,11 +94,6 @@ def test_ac3_initial_list():
     cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
     cc.enforce_node_consistency()
 
-    var1 = Variable(0, 1, Variable.DOWN, 5)
-    var2 = Variable(4, 1, Variable.ACROSS, 4)
-    var3 = Variable(0, 1, Variable.ACROSS, 3)
-    var4 = Variable(1, 4, Variable.DOWN, 4)
-
     assert cc.domains[var1] == {"EIGHT", "THREE", "SEVEN"}
     assert cc.domains[var2] == {"NINE", "FIVE", "FOUR"}
     assert cc.domains[var3] == {"ONE", "TWO", "SIX", "TEN"}
@@ -117,17 +113,10 @@ def test_assignment_complete():
     d = {}
     assert not cc.assignment_complete(d)
 
-    var1 = Variable(0, 1, Variable.DOWN, 5)
-    var2 = Variable(4, 1, Variable.ACROSS, 4)
-    var3 = Variable(0, 1, Variable.ACROSS, 3)
-    var4 = Variable(1, 4, Variable.DOWN, 4)
-
     d[var1] = "ONE"
     assert not cc.assignment_complete(d)
-
     d[var2] = "TWO"
     assert not cc.assignment_complete(d)
-
     d[var3] = "THREE"
     assert not cc.assignment_complete(d)
 
