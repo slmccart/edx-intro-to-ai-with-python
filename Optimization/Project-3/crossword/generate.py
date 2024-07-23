@@ -171,7 +171,6 @@ class CrosswordCreator:
         while arcs:
             # Pop first pair of variables from queue
             x, y = arcs.popleft()
-            print(x, y)
 
             # Make the arc arc-consistent
             if self.revise(x, y):
@@ -180,8 +179,6 @@ class CrosswordCreator:
                     return False
 
                 # Since the domain of x changed, we need to add arcs for all of x's neighbors to the queue
-                print(self.crossword.neighbors(x))
-                print(self.crossword.neighbors(x) - {y})
                 for z in self.crossword.neighbors(x) - {y}:
                     arcs.append((z, x))
 
@@ -192,7 +189,12 @@ class CrosswordCreator:
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        raise NotImplementedError
+
+        for var in self.crossword.variables:
+            if var not in assignment:
+                return False
+
+        return True
 
     def consistent(self, assignment):
         """
