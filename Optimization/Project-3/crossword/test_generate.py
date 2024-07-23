@@ -156,6 +156,30 @@ def test_consistent():
     assert cc.consistent(assignment)
 
 
+def test_order_domain_values_full_set():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+    cc.enforce_node_consistency()
+
+    initial_length = len(cc.domains[var1])
+
+    ordered_list = cc.order_domain_values(var1, {})
+
+    assert initial_length == len(ordered_list)
+
+
+def test_order_domain_values_with_assignment():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+    cc.enforce_node_consistency()
+
+    ordered_list = cc.order_domain_values(var1, {var3: "SIX"})
+    # For this crossword the valid returns are
+    #   ["SEVEN", "THREE", "EIGHT"] or ['SEVEN', 'EIGHT', 'THREE']
+    #   since 'EIGHT' and 'THREE' both eliminate 3 values
+    assert (ordered_list == ["SEVEN", "THREE", "EIGHT"]) or (
+        ordered_list == ["SEVEN", "EIGHT", "THREE"]
+    )
+
+
 if __name__ == "__main__":
     # test_enforce_node_consistency()
-    test_consistent_fails_unary_constraint()
+    test_order_domain_values_with_assignment()
