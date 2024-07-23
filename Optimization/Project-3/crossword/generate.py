@@ -266,7 +266,50 @@ class CrosswordCreator:
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        # Get all variables that have not been assigned
+        remaining = self.crossword.variables - assignment.keys()
+
+        # If only one variable is remaining, then return it
+        if len(remaining) == 1:
+            return remaining.pop()
+
+        # Find the variable with the fewest remaining values in its domain
+        #   Use a dictionary with number of remaining values as a key and build a list of variables as the value
+        #   Using a list of variables as the value will let us handle ties later
+        min_remaining_values = {}
+        for var in remaining:
+            n = len(self.domains[var])
+            if n in min_remaining_values:
+                min_remaining_values[n] += [var]
+            else:
+                min_remaining_values[n] = [var]
+
+        # Sort min_remaining_values by key (values remaining)
+        sorted_min_remaining_values = {
+            key: min_remaining_values[key] for key in sorted(min_remaining_values)
+        }
+
+        # Get the first value in the sorted dictionary
+        min_remaining_variables = sorted_min_remaining_values[
+            next(iter(sorted_min_remaining_values))
+        ]
+
+        # If there was not a tie for the lowest number of remaining values, then return the variable
+        if len(min_remaining_variables) == 1:
+            return min_remaining_variables.pop()
+
+        # Initialize tracking for variable with the most neighbors
+        max_neighbors = 0
+        most_neighors = None
+
+        # Find variable with the most neighbors
+        for var in min_remaining_variables:
+            num_neighbors = len(self.crossword.neighbors(var))
+            if num_neighbors > max_neighbors:
+                max_neighbors = num_neighbors
+                most_neighors = var
+
+        return most_neighors
 
     def backtrack(self, assignment):
         """

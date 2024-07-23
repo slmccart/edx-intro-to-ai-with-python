@@ -175,11 +175,30 @@ def test_order_domain_values_with_assignment():
     # For this crossword the valid returns are
     #   ["SEVEN", "THREE", "EIGHT"] or ['SEVEN', 'EIGHT', 'THREE']
     #   since 'EIGHT' and 'THREE' both eliminate 3 values
-    assert (ordered_list == ["SEVEN", "THREE", "EIGHT"]) or (
-        ordered_list == ["SEVEN", "EIGHT", "THREE"]
-    )
+    valid_responses = [["SEVEN", "THREE", "EIGHT"], ["SEVEN", "EIGHT", "THREE"]]
+    assert ordered_list in valid_responses
+
+
+def test_select_unassigned_variable_one_variable_remaining():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+    cc.enforce_node_consistency()
+
+    assignment = {var3: "SIX", var1: "SEVEN", var2: "NINE"}
+    assert cc.select_unassigned_variable(assignment) == var4
+
+
+def test_select_unassigned_variable():
+    cc = CrosswordCreator(Crossword("data/structure0.txt", "data/words0.txt"))
+    cc.enforce_node_consistency()
+
+    var = cc.select_unassigned_variable({})
+    # For this crossword the valid returns are
+    #   Variable(4, 1, 'across', 4) or Variable(0, 1, 'down', 5)
+    #   since they tie for remaining domains and number of neighbors
+    valid_responses = [var1, var2]
+    assert var in valid_responses
 
 
 if __name__ == "__main__":
     # test_enforce_node_consistency()
-    test_order_domain_values_with_assignment()
+    test_select_unassigned_variable()
