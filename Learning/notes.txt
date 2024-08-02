@@ -1,0 +1,136 @@
+Supervised Learning: given a data set of input-output pairs, learn a function to map inputs to outputs
+    Classification: supervised learning task of learning a function mapping an input point to a discrete category
+        examples:
+            info about a bank note -> decide if it's real or counterfeit
+            weather -> predict if it will be cloudy or rainy
+
+            Date        Humidity        Pressure        Rain
+            ===================================================
+            Jan. 1      93%             999.7           Rain
+            Jan. 2      49%             1015.5          No Rain
+            Jan. 3      79%             1031.1          No Rain
+            Jan. 4      65%             984.9           Rain
+            Jan. 5      90%             975.2           Rain
+
+        f(humidity, pressure)    *Black box, likely complicated, don't know how it works
+            f(93, 999.7)  = Rain
+            f(49, 1015.5) = No Rain
+            f(79, 1031.1) = No Rain
+
+        h(humidity, pressure)    *Hypothesis function
+
+        Nearest-neighbor classification: Algorithm that, given an input, chooses the class of the nearest data point to that input
+            con: may not be correct (especially near neighborhood boundary) since only looking at one data point
+        K-nearest-neighbor classification: Algorithm that, given an input, chooses the most common class out of the k nearest data points to that input
+        Linear regression: try to find a linear function that separates distinct data sets
+            x1 = Humidity
+            x2 = Pressure
+
+            h(x1, x2) = Rain if w0 + w1x1 + w2x2 >= 0
+                        No Rain otherwise
+
+            Weight Vector w: (w0, w1, w2)
+            Input Vector x:  (1,  x1, x2)
+            w * x: w0 + w1x1 + w2x2         * = dot product
+
+            hw(x) = 1 if w * x >= 0     Hypothesis parameterized by w
+                    0 otherwise
+
+            Perceptron learning rule: given data point (x, y), update each weight according to:
+                wi = wi + ⍺(y - hx(x)) * xi
+                or
+                wi = wi + ⍺(actual value - estimate) * xi          ⍺ is the learning rate (how quickly we adjust weights)
+
+            Logistic function: soft threshold - expresses gradation in confidence of prediction
+
+        Support Vector Machines: 
+            Solves problems that are not linearly separable by working in higher dimensions
+            maximum margin separator: boundary that maximizes the distance between any of the data points (reduces chance of error for future data points not in training set)
+
+    Regression: supervised learning task of learning a function mapping an input point to a continuous value
+        Example:
+            f(advertising)
+                f(1200) = 5800
+                f(2800) = 13400
+                f(1800) = 8400
+
+            h(advertising)
+
+    Evaluating Hypotheses
+
+        loss function: function that expresses how poorly our hypothesis performs
+        0-1 loss function:
+            L(actual, predicted) =
+                0 if actual = predicted
+                1 otherwise
+
+        L1 loss function:
+            L(actual, predicted) = abs(actual - predicted)
+
+        L2 loss function:     * more harshly penalizes larger differences
+            L(actual, predicted) = (actual - predicted)^2
+
+        overfitting: a model that fits too closely to a particular data set and therefore may fail to generalize to future data
+
+        regularization: penalizing hypotheses that are more complex to favor simpler, more general hypotheses
+            cost(h) = loss(h)                    * might result in overfitting
+            cost(h) = loss(h) + λcomplexity(h)   * gives preference to a simpler solution
+
+        holdout cross-validation: splitting data into a training set and a test set, such that learning happens on the training set and is evaluated on the test set
+        
+        k-fold cross-validation: splitting data into k sets, and experimenting k times, using each set as a test set once, and using remaining data as a training set
+
+        scikit-learn: python library that implements learning methods   * See lecture source for examples
+
+Reinforcement Learning: given a set of rewards or punishments, learn what actions to take in the future
+
+         -> Environment --------
+        |             |         |
+ action |             | state   | reward
+        |             |         |
+        |             v         |
+         ----- Agent <----------
+
+         Markov Decision Process: model for decision-making, representing states, actions, and their rewards
+            - Set of states S
+            - Set of actions Actions(s)
+            - Transition model P(s'| s, a)
+            - Reward function R(s, a, s')
+
+        Q-learning: method for learning a function Q(s, a), estimate of the value of performing action a in state s
+            - Start with Q(s, a) = 0 for all s, a
+            - When we take an action and receive a reward:
+                - Estimate the value of Q(s, a) based on current reward and expected future rewards
+                - Update Q(s, a) to take into account old estimate as well as our new estimate
+                    - Q(s, a) = Q(s, a) + ⍺(new value estimate - old value estimate)
+                    - Q(s, a) = Q(s, a) + ⍺((r + future reward estimate) - Q(s, a))
+                    - Q(s, a) = Q(s, a) + ⍺((r + 𝛾max_a' Q(s', a')) - Q(s, a))    * may use parameter 𝛾 to discount future rewards
+
+            - Greedy Decision-making
+                - When in state s, choose action a with highest Q(s, a)
+
+        Explore vs. Exploit
+            ε-Greedy
+                - Set ε equal to how often we want to move randomly (explore)
+                - With probability 1 - ε, choose estimated best move
+                - With probability ε, choose a random move
+
+        function approximation: approximating Q(s, a), often by a function combining various features, rather than storing one value for every state-action pair
+
+Unsupervised learning
+    - Given input data without any additional feedback, learn patterns
+
+    Clustering: organizing a set of objects into groups in such a way that similar objects tend to be in the same groups
+        - Applications:
+            - Genetic research
+            - Image segmentation
+            - Market research
+            - Medical imaging
+            - Social network analysis
+
+        k-means clustering: algorithm for clustering data based on repeatedly assigning points to clusters and updating those clusters' centers
+            - Algorithm
+                1. Randomly place k cluster centers
+                2. Assign points to cluster they are closest to
+                3. Move cluster centers to the middle of all of their points
+                4. Repeat steps 2-3 until nothing changes
