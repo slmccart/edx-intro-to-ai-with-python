@@ -1,5 +1,6 @@
 import csv
 import sys
+import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -149,7 +150,24 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    # Compute how well we performed
+    # A true positive is when both the truth (i.e. labels) and prediction are 1.
+    #   Multiplying label * prediction arrays gives us 1 only when both are 1.
+    #   Summing the resultant array tells us how many elements were both 1.
+    true_positive = (labels * predictions).sum()
+    # Sensitivity is the proportion of actual positive labels we identified
+    #   Actual positive labels is the sum of labels
+    sensitivity = true_positive / sum(labels)
+
+    # A true negative is when both the truth (i.e. labels) and prediction are 0
+    #   Here we add the label + prediction arrays and count the nonzero elements of the resulting array.
+    #   Subtracting the non zero elements from the original array length tells us how many were zero (i.e. true negative)
+    true_negative = len(labels) - np.count_nonzero(labels + predictions)
+    # Specificity is the proportion of actual negative labels we identified
+    #   Actual negative labels is the total number of labels minus the positive labels (i.e. sum of labels)
+    specificity = true_negative / (len(labels) - sum(labels))
+
+    return (sensitivity, specificity)
 
 
 if __name__ == "__main__":
