@@ -59,7 +59,70 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    evidence_list = []
+    labels = []
+
+    # In the CSV, columns 10, 15, 16, and 17 need special handling:
+    #   Column 10: Month needs to be converted from 'AAA' to a zero-based month index 0-11
+    #   Column 15: VisitorType needs to be converted from 'Returning_Visitor' or 'New_Visitor' to 1 or 0, respectively
+    #   Column 16: Weekend needs to be converted from 'TRUE' or 'FALSE' to 1 or 0, respectively
+    #   Column 17: Revenue needs to be converted from 'TRUE' or 'FALSE' to 1 or 0, respectively
+    special_columns = [10, 15, 16]
+
+    int_columns = [0, 2, 4, 11, 12, 13, 14]
+    float_columns = [1, 3, 5, 6, 7, 8, 9]
+
+    month_indices = {
+        "Jan": 0,
+        "Feb": 1,
+        "Mar": 2,
+        "May": 4,
+        "June": 5,
+        "Jul": 6,
+        "Aug": 7,
+        "Sep": 8,
+        "Oct": 9,
+        "Nov": 10,
+        "Dec": 11,
+    }
+
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile)
+        # Omit header row
+        next(reader, None)
+        for row in reader:
+            # Put every element except the last into evidence, converting special elements as needed
+            evidence = []
+            for i in range(len(row[:-1])):
+                if i in int_columns:
+                    evidence.append(int(row[i]))
+                elif i in float_columns:
+                    evidence.append(float(row[i]))
+                else:
+                    match i:
+                        case 10:  # Month
+                            evidence.append(month_indices[row[i]])
+                        case 15:  # VisitorType
+                            if row[i] == "Returning_Visitor":
+                                evidence.append(1)
+                            else:
+                                evidence.append(0)
+                        case 16:  # Weekend
+                            if row[i] == "TRUE":
+                                evidence.append(1)
+                            else:
+                                evidence.append(0)
+
+            evidence_list.append(evidence)
+
+            # Convert last element from 'TRUE' or 'FALSE' to 1 or 0
+            label = row[-1]
+            if label == "TRUE":
+                labels.append(1)
+            else:
+                labels.append(0)
+
+    return (evidence_list, labels)
 
 
 def train_model(evidence, labels):
