@@ -1,0 +1,21 @@
+Neural Networks
+    - In the brain, neurons are connected to and receive electrical signals from other neurons
+    - Neurons process input signals and can be activated
+
+Artificial Neural Networks
+    - Model mathematical function from inputs to outputs based on the structure and parameters of the network
+    - Allows for learning the network's parameters based on data
+
+    Recall h(x1, x2) = w0 + w1x1 + w2x2,  where w1 - wn are weights and w0 is a bias
+
+Gradient Descent
+    - Start with a random choice of weights
+    - Repeat:
+        - Calculate the gradient based on *all* data points: direction that will lead to decreasing loss
+        - Update weights according to gradient (step size configurable per particular neural network)
+
+Stochastic Gradient Descent
+    - Same as Gradient descent, but gradient calculated based on only *one* data point
+
+Mini-Batch Gradient Descent
+    - Same as Gradient descent, but gradient calculated based on one small batch of data points
