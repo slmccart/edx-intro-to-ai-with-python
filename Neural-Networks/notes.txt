@@ -19,3 +19,27 @@ Stochastic Gradient Descent
 
 Mini-Batch Gradient Descent
     - Same as Gradient descent, but gradient calculated based on one small batch of data points
+
+Perceptron
+    - Only capable of learning a linearly separable decision boundary
+
+Multi-layer neural network
+    - Artificial neural network with an input layer, an output layer, and at least one hidden layer
+
+    Backpropogation - algorithm for training neural networks with hidden layers
+
+        - Start with random choice of weights
+        - Repeat:
+            - Calculate error for output layer
+            - For each layer, starting with output layer, and moving inwards towards earliest hidden layer:
+                - Propogate error back on layer
+                - Update weights
+
+    Deep neural networks - neural network with multiple hidden layers
+
+    Prevent overfitting in neural networks
+        - Dropout - temporarily removing units, selected at random, from a neural network to prevent over-reliance on certain units
+        
+Tensorflow
+    - Google's library for neural networks
+    - playground.tensorflow.org
