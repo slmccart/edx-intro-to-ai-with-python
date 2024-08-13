@@ -1,5 +1,6 @@
 import csv
 import tensorflow as tf
+import numpy as np
 
 from sklearn.model_selection import train_test_split
 
@@ -10,14 +11,21 @@ with open("banknotes.csv") as f:
 
     data = []
     for row in reader:
-        data.append({
-            "evidence": [float(cell) for cell in row[:4]],
-            "label": 1 if row[4] == "0" else 0
-        })
+        data.append(
+            {
+                "evidence": [float(cell) for cell in row[:4]],
+                "label": 1 if row[4] == "0" else 0,
+            }
+        )
 
 # Separate data into training and testing groups
 evidence = [row["evidence"] for row in data]
 labels = [row["label"] for row in data]
+
+# Convert to numpy arrays
+evidence = np.array(evidence)
+labels = np.array(labels)
+
 X_training, X_testing, y_training, y_testing = train_test_split(
     evidence, labels, test_size=0.4
 )
@@ -25,18 +33,16 @@ X_training, X_testing, y_training, y_testing = train_test_split(
 # Create a neural network
 model = tf.keras.models.Sequential()
 
+# First, specify input layer shape
+model.add(tf.keras.Input(shape=(4,)))
 # Add a hidden layer with 8 units, with ReLU activation
-model.add(tf.keras.layers.Dense(8, input_shape=(4,), activation="relu"))
+model.add(tf.keras.layers.Dense(8, activation="relu"))
 
 # Add output layer with 1 unit, with sigmoid activation
 model.add(tf.keras.layers.Dense(1, activation="sigmoid"))
 
 # Train neural network
-model.compile(
-    optimizer="adam",
-    loss="binary_crossentropy",
-    metrics=["accuracy"]
-)
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 model.fit(X_training, y_training, epochs=20)
 
 # Evaluate how well model performs
